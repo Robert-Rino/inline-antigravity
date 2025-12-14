@@ -4,8 +4,8 @@ export const config = {
 
     // Booking Preferences
     partySize: 2,
-    preferredDate: "15", // Simple day matching for now
-    preferredTime: "12:00",
+    preferredDate: "17", // Simple day matching for now
+    preferredTime: "17:00",
 
     // Contact Info (Fill this with your details)
     user: {

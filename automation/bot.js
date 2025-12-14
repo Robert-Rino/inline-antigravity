@@ -18,7 +18,10 @@ async function runBot() {
 
     const context = await browser.newContext({
         viewport: null,
-        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        recordHar: {
+            path: 'automation/traffic.har'
+        }
     });
 
     await context.addInitScript(() => {
@@ -145,11 +148,22 @@ async function runBot() {
         console.log('✨ Script complete. Reservation submitted.');
         console.log('👉 Leaving window open for you to finalize.');
 
-        // Keep open
-        await new Promise(() => { });
+        // Keep open for a short while to ensure submission goes through and traffic is recorded
+        console.log('⏳ Waiting 20 seconds for submission response and HAR recording...');
+        await page.waitForTimeout(20000);
+
+        console.log('💾 Closing browser to save traffic.har...');
+        await context.close();
+        await browser.close();
+        console.log('✅ HAR file saved to automation/traffic.har');
 
     } catch (error) {
         console.error('❌ Error in automation:', error);
+        // Ensure we close even on error to save whatever traffic we got
+        try {
+            await context.close();
+            await browser.close();
+        } catch (e) { }
     }
 }
 
